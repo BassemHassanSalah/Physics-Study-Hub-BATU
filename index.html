@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics Study Hub Pro | كبسولة الفيزياء وحلول الشيتات</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cairo & JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            overflow-x: hidden;
+        }
+        /* Strict LTR formatting for formulas, numbers, and units */
+        .math-ltr {
+            direction: ltr;
+            unicode-bidi: isolate;
+            display: inline-block;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .formula-block {
+            direction: ltr;
+            unicode-bidi: isolate;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 9999px;
+        }
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.06); }
+        }
+        .badge-unlocked {
+            animation: pulseGlow 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-300 selection:bg-blue-500 selection:text-white">
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="fixed bottom-5 left-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- Sticky Gamified Header -->
+    <header class="sticky top-0 z-40 backdrop-blur-xl bg-white/90 dark:bg-slate-900/90 border-b border-slate-200 dark:border-slate-800 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 py-3">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+                <!-- Brand -->
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center text-white shadow-lg shadow-blue-600/30">
+                        <i class="fa-solid fa-atom text-xl"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="text-lg sm:text-xl font-black tracking-tight bg-gradient-to-l from-blue-600 to-indigo-500 dark:from-blue-400 dark:to-indigo-300 bg-clip-text text-transparent">
+                                Physics Hub Pro ⚡
+                            </h1>
+                            <span class="hidden sm:inline-block px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-black">الشيتات محلولة 100%</span>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 font-semibold">الفصل 1 و 4 + حلول Sheet 1, 2, 3</p>
+                    </div>
+                </div>
+
+                <!-- Gamification HUD -->
+                <div class="flex items-center gap-2 sm:gap-3 flex-wrap">
+                    <!-- Rank & XP Bar -->
+                    <div class="flex items-center gap-3 bg-slate-100 dark:bg-slate-800/95 border border-slate-200 dark:border-slate-700 px-3.5 py-1.5 rounded-2xl">
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <span id="rank-icon" class="text-sm">🌱</span>
+                                <span id="rank-title" class="text-xs font-extrabold text-blue-600 dark:text-blue-400">مبتدئ فيزياء</span>
+                            </div>
+                            <div class="w-24 sm:w-32 h-2 bg-slate-200 dark:bg-slate-700 rounded-full mt-1 overflow-hidden">
+                                <div id="xp-bar" class="h-full bg-gradient-to-l from-blue-500 via-indigo-500 to-emerald-400 transition-all duration-500 rounded-full" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                        <div class="border-r border-slate-300 dark:border-slate-600 pr-2.5 text-center">
+                            <span id="xp-count" class="block text-sm font-black text-amber-500 font-mono">0</span>
+                            <span class="text-[10px] text-slate-500 dark:text-slate-400 font-bold">XP</span>
+                        </div>
+                    </div>
+
+                    <!-- Streak -->
+                    <div class="flex items-center gap-1.5 bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 px-3 py-2 rounded-2xl" title="سلسلة الإجابات الصحيحة">
+                        <i class="fa-solid fa-fire text-amber-500"></i>
+                        <span id="streak-count" class="font-black text-sm font-mono">0</span>
+                    </div>
+
+                    <!-- Badges Modal Button -->
+                    <button onclick="toggleAchievementsModal()" class="relative p-2.5 rounded-2xl bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-indigo-600 dark:text-indigo-400 transition" title="الإنجازات والأوسمة">
+                        <i class="fa-solid fa-trophy text-lg"></i>
+                        <span id="badges-badge" class="absolute -top-1.5 -right-1.5 bg-emerald-500 text-white text-[10px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow">0/6</span>
+                    </button>
+
+                    <!-- Theme Toggle -->
+                    <button onclick="toggleTheme()" class="p-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition" title="تغيير الإضاءة">
+                        <i id="theme-icon" class="fa-solid fa-sun text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4 Main Navigation Tabs -->
+            <nav class="flex gap-2 mt-3 overflow-x-auto pb-1 no-scrollbar">
+                <button onclick="switchTab('notes')" id="tab-btn-notes" class="tab-btn shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all bg-blue-600 text-white shadow-md shadow-blue-600/25">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>الملخص والقوانين + حاسبة</span>
+                </button>
+                <button onclick="switchTab('sheets')" id="tab-btn-sheets" class="tab-btn shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
+                    <i class="fa-solid fa-file-signature text-indigo-500"></i>
+                    <span>حلول شيتات الدكتور (1, 2, 3)</span>
+                    <span class="text-[11px] px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 font-bold">مُراجع</span>
+                </button>
+                <button onclick="switchTab('tricks')" id="tab-btn-tricks" class="tab-btn shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
+                    <i class="fa-solid fa-bolt text-amber-500"></i>
+                    <span>تريكات وتوقعات الامتحان</span>
+                    <span id="tricks-counter" class="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 font-mono">0/7</span>
+                </button>
+                <button onclick="switchTab('quiz')" id="tab-btn-quiz" class="tab-btn shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
+                    <i class="fa-solid fa-brain text-emerald-500"></i>
+                    <span>بنك الأسئلة (25 سؤال)</span>
+                    <span id="quiz-counter" class="text-xs px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 font-mono">0/25</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="max-w-7xl mx-auto px-4 py-6 pb-24">
+
+        <!-- ========================================================= -->
+        <!-- TAB 1: SUMMARIES, FORMULAS & LIVE CALCULATORS             -->
+        <!-- ========================================================= -->
+        <section id="tab-notes" class="space-y-6">
+            <!-- Hero Banner -->
+            <div class="rounded-3xl bg-gradient-to-l from-blue-600 via-indigo-600 to-purple-700 p-6 text-white shadow-xl relative overflow-hidden">
+                <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-full bg-white/20 text-xs font-extrabold mb-2">🚀 النسخة الكاملة الشاملة للشيتات</span>
+                        <h2 class="text-2xl sm:text-3xl font-black mb-1.5">كل منهج الفيزياء في مكان واحد!</h2>
+                        <p class="text-blue-100 text-sm sm:text-base max-w-3xl leading-relaxed">
+                            ملخص مشروح بالعامية لكل قوانين <strong>الفصل الأول</strong> (الأبعاد، أنظمة القياس، الحركة الدورانية، والموائع) و<strong>الفصل الرابع</strong> (الكهربية الساكنة، المكثفات، والمقاومات) + حلول شيتات الدكتور كاملة وبنك 25 سؤال تفاعلي.
+                        </p>
+                    </div>
+                    <div class="flex flex-wrap gap-2.5 shrink-0">
+                        <button onclick="switchTab('sheets')" class="px-5 py-3 rounded-2xl bg-white text-indigo-700 hover:bg-blue-50 font-black text-sm shadow-lg transition active:scale-95 flex items-center gap-2">
+                            <i class="fa-solid fa-check-double"></i>
+                            <span>شوف حلول الشيتات</span>
+                        </button>
+                        <button onclick="switchTab('quiz')" class="px-5 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-sm shadow-lg transition active:scale-95 flex items-center gap-2">
+                            <i class="fa-solid fa-play"></i>
+                            <span>اختبر نفسك (25 سؤال)</span>
+                        </button>
+                    </div>
+                </div>
+                <i class="fa-solid fa-atom text-9xl text-white/5 absolute -bottom-8 -left-6 pointer-events-none"></i>
+            </div>
+
+            <!-- Interactive Live Calculators Widget -->
+            <div class="rounded-3xl bg-white dark:bg-slate-900 border-2 border-blue-500/25 p-5 sm:p-6 shadow-md">
+                <div class="flex items-center justify-between flex-wrap gap-2 mb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/15 text-blue-500 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-black">حاسبات الفيزياء الفورية (جرب الأرقام واتأكد من حلك)</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">بتحسبلك التحويلات الصعبة وقوانين الشيتات في ثانية</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <!-- Calc 1: Coulomb & Wire Equilibrium -->
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-black text-sm text-blue-600 dark:text-blue-400">1. كولوم وتلامس الكرتين</h4>
+                            <span class="math-ltr text-[11px] bg-blue-500/10 px-2 py-0.5 rounded font-bold">F = k|q₁q₂|/r²</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-xs">
+                            <div>
+                                <label class="block text-slate-500 mb-1"><span class="math-ltr">q₁ (nC)</span></label>
+                                <input type="number" id="c-q1" value="10" class="w-full p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-left" dir="ltr">
+                            </div>
+                            <div>
+                                <label class="block text-slate-500 mb-1"><span class="math-ltr">q₂ (nC)</span></label>
+                                <input type="number" id="c-q2" value="-14" class="w-full p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-left" dir="ltr">
+                            </div>
+                            <div>
+                                <label class="block text-slate-500 mb-1"><span class="math-ltr">r (m)</span></label>
+                                <input type="number" id="c-r" value="0.5" step="0.1" class="w-full p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-left" dir="ltr">
+                            </div>
+                        </div>
+                        <button onclick="runCoulombCalc()" class="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs transition">احسب قبل وبعد التوصيل بسلك</button>
+                        <div id="c-coulomb-out" class="p-2.5 rounded-xl bg-blue-500/10 text-[11px] font-bold text-blue-800 dark:text-blue-200 leading-relaxed">
+                            قبل: <span class="math-ltr">5.04e-6 N</span> (تجاذب)<br>
+                            بعد السلك (<span class="math-ltr">-2 nC</span>): <span class="math-ltr">1.44e-7 N</span> (تنافر)
+                        </div>
+                    </div>
+
+                    <!-- Calc 2: Unit Converter (Sheet 1 & 2) -->
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-black text-sm text-purple-600 dark:text-purple-400">2. محول وحدات الشيتات</h4>
+                            <span class="text-[11px] bg-purple-500/10 px-2 py-0.5 rounded font-bold">SI ⇄ CGS/FPS</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                                <label class="block text-slate-500 mb-1">القيمة</label>
+                                <input type="number" id="u-val" value="54" class="w-full p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-left" dir="ltr">
+                            </div>
+                            <div>
+                                <label class="block text-slate-500 mb-1">نوع التحويل</label>
+                                <select id="u-type" class="w-full p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-bold">
+                                    <option value="kmh_ms">km/h ➔ m/s</option>
+                                    <option value="ms_kmh">m/s ➔ km/h</option>
+                                    <option value="gcm3_kgm3">g/cm³ ➔ kg/m³</option>
+                                    <option value="rpm_rads">rpm ➔ rad/s</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="runUnitCalc()" class="w-full py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs transition">حوّل الوحدة فوراً</button>
+                        <div id="u-out" class="p-2.5 rounded-xl bg-purple-500/10 text-xs font-bold text-center text-purple-800 dark:text-purple-200">
+                            الناتج: <span class="math-ltr">15 m/s</span>
+                        </div>
+                    </div>
+
+                    <!-- Calc 3: Series & Parallel Resistors / Capacitors -->
+                    <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-700 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-black text-sm text-emerald-600 dark:text-emerald-400">3. مكثفات ومقاومات</h4>
+                            <span class="text-[11px] bg-emerald-500/10 px-2 py-0.5 rounded font-bold">توالي vs توازي</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-xs">
+                            <div>
+                                <label class="block text-slate-500 mb-1">قيمة 1</label>
+                                <input type="number" id="rc-v1" value="2" class="w-full p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-left" dir="ltr">
+                            </div>
+                            <div>
+                                <label class="block text-slate-500 mb-1">قيمة 2</label>
+                                <input type="number" id="rc-v2" value="2" class="w-full p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 font-mono text-left" dir="ltr">
+                            </div>
+                            <div>
+                                <label class="block text-slate-500 mb-1">العنصر</label>
+                                <select id="rc-type" class="w-full p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-xs font-bold">
+                                    <option value="cap">مكثف (C)</option>
+                                    <option value="res">مقاومة (R)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="runRCCalc()" class="w-full py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition">احسب المكافئة</button>
+                        <div id="rc-out" class="p-2.5 rounded-xl bg-emerald-500/10 text-xs font-bold text-center text-emerald-800 dark:text-emerald-200">
+                            توازي: <span class="math-ltr">4</span> | توالي: <span class="math-ltr">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Bar for Notes -->
+            <div class="flex flex-wrap items-center justify-between gap-3 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterNotes('all')" class="note-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white" data-filter="all">الكل (9 دروس)</button>
+                    <button onclick="filterNotes('ch1')" class="note-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" data-filter="ch1">الفصل الأول (أبعاد، دوران، موائع)</button>
+                    <button onclick="filterNotes('ch4')" class="note-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" data-filter="ch4">الفصل الرابع (كهربية ومقاومات)</button>
+                </div>
+                <span id="notes-progress-text" class="text-xs font-bold text-slate-500 dark:text-slate-400 px-2">تمت مذاكرة 0 من 9 دروس</span>
+            </div>
+
+            <!-- Study Notes Grid -->
+            <div id="notes-container" class="grid grid-cols-1 lg:grid-cols-2 gap-6"></div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- TAB 2: SOLVED DOCTOR'S SHEETS (SHEET 1, 2, 3)             -->
+        <!-- ========================================================= -->
+        <section id="tab-sheets" class="hidden space-y-6">
+            <!-- Header Banner -->
+            <div class="rounded-3xl bg-gradient-to-l from-indigo-600 via-blue-700 to-cyan-700 p-6 text-white shadow-xl">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-full bg-white/20 text-xs font-black mb-2">✅ مراجعة وتدقيق 100%</span>
+                        <h2 class="text-2xl sm:text-3xl font-black mb-1">الحلول النموذجية لشيتات الدكتور (Sheet 1, 2, 3)</h2>
+                        <p class="text-blue-100 text-sm sm:text-base">
+                            كل مسألة بالقانون، خطوات التعويض، والناتج النهائي في أنظمة القياس الثلاثة (<span class="math-ltr font-bold">SI, CGS, FPS</span>). اضغط على أي مسألة لفتح أو إغلاق خطوات الحل.
+                        </p>
+                    </div>
+                    <div class="flex gap-2 shrink-0">
+                        <button onclick="toggleAllSheetSolutions(true)" class="px-4 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 border border-white/30 text-xs font-bold">فتح كل الحلول</button>
+                        <button onclick="toggleAllSheetSolutions(false)" class="px-4 py-2.5 rounded-xl bg-black/20 hover:bg-black/30 text-xs font-bold">طي الكل</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sheet Sub-Filter Buttons -->
+            <div class="flex flex-wrap gap-2 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800">
+                <button onclick="filterSheets('all')" class="sheet-filter-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black bg-indigo-600 text-white" data-sfilter="all">جميع الشيتات (19 مسألة)</button>
+                <button onclick="filterSheets('sheet1')" class="sheet-filter-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" data-sfilter="sheet1">Sheet (1) - الأبعاد والتحويلات</button>
+                <button onclick="filterSheets('sheet2')" class="sheet-filter-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" data-sfilter="sheet2">Sheet (2) - الدوران والموائع</button>
+                <button onclick="filterSheets('sheet3')" class="sheet-filter-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" data-sfilter="sheet3">Sheet (3) - الكهربية وكولوم</button>
+            </div>
+
+            <!-- Sheets Solutions Container -->
+            <div id="sheets-container" class="space-y-4"></div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- TAB 3: EXAM TRICKS & PREDICTIONS                          -->
+        <!-- ========================================================= -->
+        <section id="tab-tricks" class="hidden space-y-6">
+            <div class="rounded-3xl bg-gradient-to-l from-amber-500 to-orange-600 p-6 text-slate-950 shadow-xl">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <span class="inline-block px-3 py-1 rounded-full bg-black/15 text-xs font-black mb-2">🔥 زتونة وتريكات الشيتات والامتحان</span>
+                        <h2 class="text-2xl sm:text-3xl font-black mb-1">7 مطبات لو عرفتهم هتقفل المسائل بسهولة!</h2>
+                        <p class="text-slate-900/85 text-sm sm:text-base font-semibold">
+                            شامل ملاحظات مهمة جداً اكتشفناها جوه شيتات الدكتور (زي معطيات شيت 3 وتحويلات شيت 1 و 2).
+                        </p>
+                    </div>
+                    <div class="bg-white/95 px-4 py-3 rounded-2xl text-center shrink-0 shadow">
+                        <span class="block text-xs font-bold text-slate-500">التريكات المهضومة</span>
+                        <span id="tricks-big-counter" class="text-2xl font-black text-orange-600 font-mono">0 / 7</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tricks-container" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div>
+        </section>
+
+        <!-- ========================================================= -->
+        <!-- TAB 4: 25-QUESTION INTERACTIVE QUIZ BANK                  -->
+        <!-- ========================================================= -->
+        <section id="tab-quiz" class="hidden space-y-6">
+            <div class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-black flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye text-emerald-500"></i>
+                            <span>بنك الأسئلة الشامل (25 سؤال من المحاضرات والشيتات)</span>
+                        </h2>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                            كل سؤال معاه شرح خطوات الحل بالتفصيل، وكل إجابة صحيحة بتديك <span class="text-amber-500 font-black">+20 XP</span>!
+                        </p>
+                    </div>
+                    <button onclick="resetQuizProgress()" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 border border-rose-500/20 transition self-start md:self-auto">
+                        <i class="fa-solid fa-rotate-right ml-1"></i> إعادة حل الأسئلة
+                    </button>
+                </div>
+
+                <!-- Quiz Topic Filters -->
+                <div class="flex flex-wrap gap-2 mt-5 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <button onclick="filterQuiz('all')" class="quiz-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 text-white" data-qfilter="all">كل الأسئلة (25)</button>
+                    <button onclick="filterQuiz('ch1_sheets')" class="quiz-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" data-qfilter="ch1_sheets">الفصل 1 + Sheet 1 & 2</button>
+                    <button onclick="filterQuiz('ch4_sheet3')" class="quiz-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" data-qfilter="ch4_sheet3">الفصل 4 + Sheet 3</button>
+                    <button onclick="filterQuiz('traps')" class="quiz-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300" data-qfilter="traps">تريكات ومطبات الامتحان</button>
+                </div>
+            </div>
+
+            <div id="quiz-container" class="space-y-5"></div>
+        </section>
+
+    </main>
+
+    <!-- Achievements Modal -->
+    <div id="achievements-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+        <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-trophy text-2xl text-amber-500"></i>
+                    <h3 class="text-xl font-black">لوحة الإنجازات والأوسمة</h3>
+                </div>
+                <button onclick="toggleAchievementsModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-500 hover:text-slate-900 dark:hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="achievements-list" class="grid grid-cols-1 sm:grid-cols-2 gap-3 my-5 max-h-[60vh] overflow-y-auto pr-1"></div>
+            <div class="flex justify-between items-center pt-3 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500">
+                <span>تقدمك محفوظ تلقائياً على متصفحك 💾</span>
+                <button onclick="toggleAchievementsModal()" class="px-4 py-2 rounded-xl bg-blue-600 text-white font-bold">إغلاق</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. STUDY NOTES DATA (CHAPTERS 1 & 4)
+        // ==========================================
+        const STUDY_NOTES = [
+            {
+                id: 'n1',
+                chapter: 'ch1',
+                badge: 'الفصل 1 • الأبعاد وأنظمة القياس',
+                title: 'الوحدات، الأبعاد، وأنظمة القياس (SI, CGS, FPS)',
+                icon: 'fa-ruler-combined',
+                summary: 'أي كمية فيزيائية بنرجعها للكتلة (M) والطول (L) والزمن (T). في أنظمة القياس الثلاثة: النظام الدولي (SI: متر، كجم، ثانية)، النظام الفرنسي (CGS: سم، جرام، ثانية)، والنظام البريطاني (FPS: قدم، باوند، ثانية).',
+                formulas: [
+                    { name: 'السرعة (v) والعجلة (a)', expr: '[v] = LT⁻¹  |  [a] = LT⁻²', unit: 'm/s | m/s²' },
+                    { name: 'القوة (F = ma)', expr: '[F] = MLT⁻²', unit: 'N (SI) | dyne (CGS) | Poundal (FPS)' },
+                    { name: 'الشغل (W = F·d)', expr: '[W] = ML²T⁻²', unit: 'J (SI) | erg (CGS) | ft·Poundal (FPS)' },
+                    { name: 'القدرة (P = W/t)', expr: '[P] = ML²T⁻³', unit: 'W (SI) | erg/s (CGS)' },
+                    { name: 'الضغط (p = F/A)', expr: '[p] = ML⁻¹T⁻²', unit: 'Pa (SI) | dyne/cm² (CGS)' }
+                ],
+                example: '<strong>قاعدة التحليل البعدي:</strong> الأرقام والثوابت مثل <span class="math-ltr">2π</span> و <span class="math-ltr">1/2</span> ليس لها أبعاد. لكي تكون المعادلة صحيحة يجب أن تتساوى أبعاد كل حد في الطرفين (مثل <span class="math-ltr">T = 2π√(L/g)</span> و <span class="math-ltr">x = v₀t + ½at²</span>).'
+            },
+            {
+                id: 'n2',
+                chapter: 'ch1',
+                badge: 'الفصل 1 + Sheet 2 • الحركة الدورانية',
+                title: 'العزم، السرعة الخطية، والقدرة الدورانية',
+                icon: 'fa-gear',
+                summary: 'لما جسم بيلف في دائرة (زي عجلة أو عمود دوران): العزم هو القوة في ذراعها، والسرعة الخطية بتساوي السرعة الزاوية في نصف القطر (خد بالك لو اداك القطر Diameter اقسمه على 2!).',
+                formulas: [
+                    { name: 'عزم الدوران (Torque)', expr: 'τ = F · r', unit: 'N·m' },
+                    { name: 'السرعة الزاوية (ω)', expr: 'ω = 2πf = (2π · rpm) / 60', unit: 'rad/s' },
+                    { name: 'السرعة الخطية (v)', expr: 'v = ω · r', unit: 'm/s' },
+                    { name: 'القدرة الدورانية (P)', expr: 'P = τ · ω', unit: 'Watt (W)' }
+                ],
+                example: '<strong>مثال شيت 2:</strong> عمود يدور بعزم <span class="math-ltr">12 N·m</span> بسرعة <span class="math-ltr">50 rpm</span>: نحول السرعة الزاوية <span class="math-ltr">ω = (2π × 50)/60 = 5.236 rad/s</span>، فتكون القدرة <span class="math-ltr">P = 12 × 5.236 = 62.83 W</span>.'
+            },
+            {
+                id: 'n3',
+                chapter: 'ch1',
+                badge: 'الفصل 1 + Sheet 2 • خواص الموائع',
+                title: 'الكثافة، الوزن النوعي، اللزوجة، والإجهاد',
+                icon: 'fa-droplet',
+                summary: 'الكثافة النسبية (SG) هي نسبة كثافة المادة لكثافة الماء (1000 kg/m³) وليس لها وحدة قياس. اللزوجة هي مقاومة المائع للسريان، وبتقل بتسخين السوائل لكن بتزيد شوية بتسخين الغازات.',
+                formulas: [
+                    { name: 'الكثافة (ρ) والوزن النوعي (γ)', expr: 'ρ = m / V   |   γ = ρ · g', unit: 'kg/m³ | N/m³' },
+                    { name: 'الكثافة النسبية (SG)', expr: 'SG = ρ / 1000', unit: 'بدون وحدة' },
+                    { name: 'اللزوجة الديناميكية والحركية', expr: 'τ = μ(du/dy)  |  ν = μ / ρ', unit: 'Pa·s | m²/s' },
+                    { name: 'الإجهاد (σ) والانفعال (ε)', expr: 'σ = F / A   |   ε = ΔL / L', unit: 'Pa | بدون وحدة' }
+                ],
+                example: '<strong>تحويل الكثافة السريع:</strong> للتحويل من <span class="math-ltr">g/cm³</span> إلى <span class="math-ltr">kg/m³</span> اضرب في <span class="math-ltr">1000</span> فوراً! (مثلاً <span class="math-ltr">6.8 g/cm³ = 6800 kg/m³</span>).'
+            },
+            {
+                id: 'n4',
+                chapter: 'ch4',
+                badge: 'الفصل 4 + Sheet 3 • الشحنة الكهربية',
+                title: 'الشحنة الكهربية، الموصلات، وتكمية الشحنة',
+                icon: 'fa-atom',
+                summary: 'الإلكترونات هي التي تتحرك، أما البروتونات فثابتة داخل النواة. الموصلات (كالنحاس) بها إلكترونات حرة، والعوازل (كالزجاج) إلكتروناتها مقيدة. الشحنة محفوظة ومُكمّاة.',
+                formulas: [
+                    { name: 'قانون تكمية الشحنة', expr: 'Q = N · e   ⇒   N = Q / e', unit: 'Coulomb (C)' },
+                    { name: 'شحنة الإلكترون القياسية', expr: 'e = 1.6 × 10⁻¹⁹ C', unit: 'ثابت' }
+                ],
+                example: '<strong>ملاحظة هامة في Sheet 3:</strong> في مسألة 1 و 2 بشيت 3، الدكتور كتب في المعطيات <span class="math-ltr">e = 4 × 10⁻¹⁹ C</span>، في الامتحان التزم بالرقم المعطى في رأس السؤال!'
+            },
+            {
+                id: 'n5',
+                chapter: 'ch4',
+                badge: 'الفصل 4 + Sheet 3 • قانون كولوم',
+                title: 'قانون كولوم وتوازن الكرات الموصلة',
+                icon: 'fa-magnet',
+                summary: 'الشحنات المتشابهة تتنافر والمختلفة تتجاذب. نعوض في قانون كولوم بالقيمة المطلقة للشحنات، وإذا تلامست كرتان متماثلتان بسلك تتوزع الشحنة الكلية بينهما بالتساوي.',
+                formulas: [
+                    { name: 'قانون كولوم', expr: 'F = k · |q₁q₂| / r²', unit: 'N (k = 9×10⁹)' },
+                    { name: 'شحنة الاتزان بعد التوصيل', expr: "q' = (q₁ + q₂) / 2", unit: 'C' },
+                    { name: 'التحويلات الإجبارية', expr: '1μC = 10⁻⁶C | 1nC = 10⁻⁹C | 1cm = 10⁻²m', unit: 'أساسي' }
+                ],
+                example: '<strong>مثال الكرتين:</strong> <span class="math-ltr">+10 nC</span> و <span class="math-ltr">-14 nC</span> على بعد <span class="math-ltr">0.5 m</span>: القوة تجاذب <span class="math-ltr">5.04×10⁻⁶ N</span>. بعد التوصيل بسلك تصبح كل كرة <span class="math-ltr">-2 nC</span> فتصبح القوة تنافر <span class="math-ltr">1.44×10⁻⁷ N</span>.'
+            },
+            {
+                id: 'n6',
+                chapter: 'ch4',
+                badge: 'الفصل 4 + Sheet 3 • المجال الكهربي',
+                title: 'المجال الكهربي (E) ومحصلة المتجهات',
+                icon: 'fa-arrows-up-down-left-right',
+                summary: 'المجال كمية <strong>متجهة</strong>: يخرج بعيداً عن الشحنة الموجبة، ويتجه نحو الشحنة السالبة. في نفس الاتجاه نجمع، عكس بعض نطرح، متعامدين نستخدم فيثاغورس.',
+                formulas: [
+                    { name: 'شدة المجال لشحنة نقطية', expr: 'E = k · |q| / r²', unit: 'N/C أو V/m' },
+                    { name: 'القوة المؤثرة على شحنة', expr: 'F = q₀ · E', unit: 'N' },
+                    { name: 'المتعامدان (مسألة 7 شيت 3)', expr: 'E = √(Ex² + Ey²)  |  θ = tan⁻¹(Ey/Ex)', unit: 'متجه' }
+                ],
+                example: '<strong>قاعدة المنتصف:</strong> في منتصف المسافة بين شحنة موجبة وسالبة، المجالان يكونان في <strong>نفس الاتجاه</strong> (نحو السالبة) لذلك نجمعهما دائماً!'
+            },
+            {
+                id: 'n7',
+                chapter: 'ch4',
+                badge: 'الفصل 4 • الجهد الكهربي (V)',
+                title: 'الجهد الكهربي والفرق بينه وبين المجال',
+                icon: 'fa-bolt',
+                summary: 'الجهد كمية <strong>قياسية</strong> (ليس له اتجاه)، لذلك نعوض بإشارة الشحنة (+ أو -) داخل القانون ونجمع جبرياً.',
+                formulas: [
+                    { name: 'الجهد لشحنة نقطية', expr: 'V = k · q / r', unit: 'Volt (J/C)' },
+                    { name: 'الجهد بين لوحين متوازيين', expr: 'V = E · d   ⇒   E = V / d', unit: 'V/m' }
+                ],
+                example: '<strong>مثال مشهور:</strong> في منتصف المسافة بين <span class="math-ltr">+2 μC</span> و <span class="math-ltr">-2 μC</span>: الجهد الكلي <span class="math-ltr">V = 0</span> بينما المجال <span class="math-ltr">E = 5.76×10⁷ N/C ≠ 0</span>.'
+            },
+            {
+                id: 'n8',
+                chapter: 'ch4',
+                badge: 'الفصل 4 • المكثفات الكهربية',
+                title: 'المكثفات وتوصيل التوالي والتوازي',
+                icon: 'fa-battery-half',
+                summary: 'المكثف يخزن الشحنة الكهربية. انتبه أن قوانين المكثفات <strong>عكس المقاومات تماماً</strong>!',
+                formulas: [
+                    { name: 'سعة المكثف', expr: 'C = Q / V', unit: 'Farad (F)' },
+                    { name: 'توصيل التوازي (الجهد ثابت)', expr: 'C_eq = C₁ + C₂', unit: 'F' },
+                    { name: 'توصيل التوالي (الشحنة ثابتة)', expr: '1/C_eq = 1/C₁ + 1/C₂', unit: 'F' }
+                ],
+                example: '<strong>مثال:</strong> مكثفان <span class="math-ltr">2 μF</span> و <span class="math-ltr">2 μF</span>: على التوازي يعطيان <span class="math-ltr">4 μF</span>، وعلى التوالي يعطيان <span class="math-ltr">1 μF</span>.'
+            },
+            {
+                id: 'n9',
+                chapter: 'ch4',
+                badge: 'الفصل 4 • المقاومة وقانون أوم',
+                title: 'المقاومة النوعية، قانون أوم، والقدرة',
+                icon: 'fa-microchip',
+                summary: 'تتناسب مقاومة السلك طردياً مع طوله وعكسياً مع مساحة مقطعه. في التوالي التيار ثابت والمقاومات تُجمع، وفي التوازي الجهد ثابت.',
+                formulas: [
+                    { name: 'قانون أوم', expr: 'V = I · R', unit: 'Ohm (Ω)' },
+                    { name: 'المقاومة والأبعاد', expr: 'R = ρ · L / A', unit: 'Ω' },
+                    { name: 'توصيل المقاومات', expr: 'توالي: R₁+R₂  |  توازي: 1/R₁+1/R₂', unit: 'Ω' },
+                    { name: 'القدرة الكهربية', expr: 'P = V · I = I² · R = V² / R', unit: 'Watt (W)' }
+                ],
+                example: '<strong>مثال:</strong> مقاومتان <span class="math-ltr">10 Ω</span> توالي مع <span class="math-ltr">12 V</span>: المقاومة الكلية <span class="math-ltr">20 Ω</span> والتيار المار في كل مقاومة <span class="math-ltr">12 / 20 = 0.6 A</span>.'
+            }
+        ];
+
+        // ==========================================
+        // 2. DOCTOR'S SOLVED SHEETS (SHEET 1, 2, 3)
+        // ==========================================
+        const SOLVED_SHEETS = [
+            // SHEET 1
+            {
+                id: 's1-1',
+                sheet: 'sheet1',
+                badge: 'Sheet (1) • الجزء الأول',
+                title: 'استنتاج الأبعاد والوحدات في الأنظمة الثلاثة (SI, FPS, CGS)',
+                question: 'Derive the Dimensions and Units in SI, British (FPS), and French (CGS) systems for: v, a, F, W, P, p, V, ρ.',
+                steps: `
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs text-right border-collapse">
+                            <thead>
+                                <tr class="bg-indigo-500/15 text-indigo-600 dark:text-indigo-300 font-black">
+                                    <th class="p-2.5 border border-slate-200 dark:border-slate-700">الكمية</th>
+                                    <th class="p-2.5 border border-slate-200 dark:border-slate-700">الأبعاد</th>
+                                    <th class="p-2.5 border border-slate-200 dark:border-slate-700">SI (الدولي)</th>
+                                    <th class="p-2.5 border border-slate-200 dark:border-slate-700">FPS (البريطاني)</th>
+                                    <th class="p-2.5 border border-slate-200 dark:border-slate-700">CGS (الفرنسي)</th>
+                                </tr>
+                            </thead>
+                            <tbody class="font-mono" dir="ltr">
+                                <tr><td class="p-2 border border-slate-200 dark:border-slate-700 font-bold">v (Velocity)</td><td class="p-2 border border-slate-200 dark:border-slate-700">[LT⁻¹]</td><td class="p-2 border border-slate-200 dark:border-slate-700">m/s</td><td class="p-2 border border-slate-200 dark:border-slate-700">ft/s</td><td class="p-2 border border-slate-200 dark:border-slate-700">cm/s</td></tr>
+                                <tr><td class="p-2 border border-slate-200 dark:border-slate-700 font-bold">a (Acceleration)</td><td class="p-2 border border-slate-200 dark:border-slate-700">[LT⁻²]</td><td class="p-2 border border-slate-200 dark:border-slate-700">m/s²</td><td class="p-2 border border-slate-200 dark:border-slate-700">ft/s²</td><td class="p-2 border border-slate-200 dark:border-slate-700">cm/s²</td></tr>
+                                <tr><td class="p-2 border border-slate-200 dark:border-slate-700 font-bold">F (Force)</td><td class="p-2 border border-slate-200 dark:border-slate-700">[MLT⁻²]</td><td class="p-2 border border-slate-200 dark:border-slate-700">N (kg·m/s²)</td><td class="p-2 border border-slate-200 dark:border-slate-700">Poundal (lb·ft/s²)</td><td class="p-2 border border-slate-200 dark:border-slate-700">dyne (g·cm/s²)</td></tr>
+                                <tr><td class="p-2 border border-slate-200 dark:border-slate-700 font-bold">W (Work)</td><td class="p-2 border border-slate-200 dark:border-slate-700">[ML²T⁻²]</td><td class="p-2 border border-slate-200 dark:border-slate-700">J (N·m)</td><td class="p-2 border border-slate-200 dark:border-slate-700">ft·Poundal</td><td class="p-2 border border-slate-200 dark:border-slate-700">erg (dyne·cm)</td></tr>
+                                <tr><td class="p-2 border border-slate-200 dark:border-slate-700 font-bold">P (Power)</td><td class="p-2 border border-slate-200 dark:border-slate-700">[ML²T⁻³]</td><td class="p-2 border border-slate-200 dark:border-slate-700">W (J/s)</td><td class="p-2 border border-slate-200 dark:border-slate-700">ft·Poundal/s</td><td class="p-2 border border-slate-200 dark:border-slate-700">erg/s</td></tr>
+                                <tr><td class="p-2 border border-slate-200 dark:border-slate-700 font-bold">p (Pressure)</td><td class="p-2 border border-slate-200 dark:border-slate-700">[ML⁻¹T⁻²]</td><td class="p-2 border border-slate-200 dark:border-slate-700">Pa (N/m²)</td><td class="p-2 border border-slate-200 dark:border-slate-700">Poundal/ft²</td><td class="p-2 border border-slate-200 dark:border-slate-700">dyne/cm²</td></tr>
+                                <tr><td class="p-2 border border-slate-200 dark:border-slate-700 font-bold">V (Volume)</td><td class="p-2 border border-slate-200 dark:border-slate-700">[L³]</td><td class="p-2 border border-slate-200 dark:border-slate-700">m³</td><td class="p-2 border border-slate-200 dark:border-slate-700">ft³</td><td class="p-2 border border-slate-200 dark:border-slate-700">cm³</td></tr>
+                                <tr><td class="p-2 border border-slate-200 dark:border-slate-700 font-bold">ρ (Density)</td><td class="p-2 border border-slate-200 dark:border-slate-700">[ML⁻³]</td><td class="p-2 border border-slate-200 dark:border-slate-700">kg/m³</td><td class="p-2 border border-slate-200 dark:border-slate-700">lb/ft³</td><td class="p-2 border border-slate-200 dark:border-slate-700">g/cm³</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `,
+                finalAnswer: 'الجدول الكامل للوحدات والأبعاد أعلاه'
+            },
+            {
+                id: 's1-2',
+                sheet: 'sheet1',
+                badge: 'Sheet (1) • تحويل الوحدات (1 إلى 8)',
+                title: 'حل جميع مسائل تحويل الوحدات في Sheet (1)',
+                question: 'Convert: (1) 54 km/h to m/s | (2) 500 J/s to kJ/h | (3) 3 Gg, 5 cg, 420 μg to kg | (4) 5 mm, 4 km to cm | (5) 6.8 g/cm³ to SI | (6) 57.6 km/h to m/s | (7) 18 m/s to km/h | (8) 2.4 g/cm³ & 36 μA/mm² to SI.',
+                steps: `
+                    <ul class="space-y-2 text-xs sm:text-sm">
+                        <li><strong>1)</strong> <span class="math-ltr">54 km/h = 54 × (1000 / 3600) = 15 m/s</span></li>
+                        <li><strong>2)</strong> <span class="math-ltr">500 J/s = (500 × 10⁻³ kJ) / (1/3600 h) = 0.5 × 3600 = 1800 kJ/h</span></li>
+                        <li><strong>3)</strong> (a) <span class="math-ltr">3 Gg = 3 × 10⁹ g = 3 × 10⁶ kg</span> | (b) <span class="math-ltr">5.0 cg = 5 × 10⁻² g = 5 × 10⁻⁵ kg</span> | (c) <span class="math-ltr">420 μg = 420 × 10⁻⁶ g = 4.2 × 10⁻⁷ kg</span></li>
+                        <li><strong>4)</strong> (a) <span class="math-ltr">5 mm = 5 × 10⁻¹ cm = 0.5 cm</span> | (b) <span class="math-ltr">4 km = 4 × 10⁵ cm</span></li>
+                        <li><strong>5)</strong> <span class="math-ltr">6.8 g/cm³ = 6.8 × 1000 = 6800 kg/m³</span></li>
+                        <li><strong>6)</strong> <span class="math-ltr">57.6 km/h = 57.6 × (1000 / 3600) = 16 m/s</span></li>
+                        <li><strong>7)</strong> <span class="math-ltr">18.0 m/s = 18.0 × 3.6 = 64.8 km/h</span></li>
+                        <li><strong>8)</strong> (a) <span class="math-ltr">2.4 g/cm³ = 2400 kg/m³</span> | (b) <span class="math-ltr">36 μA/mm² = (36 × 10⁻⁶ A) / (10⁻⁶ m²) = 36 A/m²</span></li>
+                    </ul>
+                `,
+                finalAnswer: '15 m/s | 1800 kJ/h | 6800 kg/m³ | 36 A/m²'
+            },
+            {
+                id: 's1-3',
+                sheet: 'sheet1',
+                badge: 'Sheet (1) • التحليل البعدي (1 و 2)',
+                title: 'إيجاد أبعاد ثابت الجذب العام G وإثبات صحة معادلة الحركة',
+                question: '1) Find dimension and unit of G in F = G·M·m/r².  2) Show that x = v₀t + ½at² is dimensionally correct.',
+                steps: `
+                    <div class="space-y-2 text-xs sm:text-sm">
+                        <p><strong>1) ثابت الجذب العام (G):</strong><br>
+                        <span class="math-ltr">G = (F · r²) / (M · m) ⇒ [G] = ([MLT⁻²] · [L²]) / [M²] = [M⁻¹L³T⁻²]</span><br>
+                        الوحدة في النظام الدولي: <span class="math-ltr">N·m²/kg²</span> أو <span class="math-ltr">m³/(kg·s²)</span>.</p>
+                        <p><strong>2) إثبات صحة <span class="math-ltr">x = v₀t + ½at²</span>:</strong><br>
+                        • الطرف الأيسر: <span class="math-ltr">[x] = [L]</span><br>
+                        • الحد الأول: <span class="math-ltr">[v₀t] = [LT⁻¹][T] = [L]</span><br>
+                        • الحد الثاني (الثابت ½ ليس له أبعاد): <span class="math-ltr">[½at²] = [LT⁻²][T²] = [L]</span><br>
+                        بما أن أبعاد كل الحدود متطابقة (<span class="math-ltr">[L]</span>)، إذن المعادلة صحيحة بعدياً.</p>
+                    </div>
+                `,
+                finalAnswer: '[G] = [M⁻¹L³T⁻²] (N·m²/kg²)'
+            },
+
+            // SHEET 2
+            {
+                id: 's2-1',
+                sheet: 'sheet2',
+                badge: 'Sheet (2) • مسألة 1 و 2 و 3',
+                title: 'مسائل العزم والسرعة الخطية والقدرة الدورانية',
+                question: '1) Torque by 5 N at 0.65 m. 2) Wheel diameter 0.43 m at 3 rps -> linear velocity in SI, FPS, CGS. 3) Power of shaft with torque 12 N·m at 50 rpm.',
+                steps: `
+                    <div class="space-y-2.5 text-xs sm:text-sm">
+                        <p><strong>مسألة (1):</strong> <span class="math-ltr">τ = F · r = 5 × 0.65 = 3.25 N·m</span></p>
+                        <p><strong>مسألة (2):</strong> نصف القطر <span class="math-ltr">r = 0.43 / 2 = 0.215 m</span>، التردد <span class="math-ltr">f = 3 rps</span>:<br>
+                        • <span class="math-ltr">v = ω·r = 2πf·r = 2 × 3.1416 × 3 × 0.215 = 4.05 m/s</span> (SI)<br>
+                        • <span class="math-ltr">v = 4.05 × 100 = 405 cm/s</span> (CGS)<br>
+                        • <span class="math-ltr">v = 4.05 × 3.281 = 13.3 ft/s</span> (FPS)</p>
+                        <p><strong>مسألة (3):</strong> نحول rpm إلى rad/s: <span class="math-ltr">ω = (2π × 50) / 60 = 5.236 rad/s</span><br>
+                        • القدرة: <span class="math-ltr">P = τ · ω = 12 × 5.236 = 62.83 W</span></p>
+                    </div>
+                `,
+                finalAnswer: '1) 3.25 N·m | 2) 4.05 m/s | 3) 62.83 W'
+            },
+            {
+                id: 's2-2',
+                sheet: 'sheet2',
+                badge: 'Sheet (2) • مسألة 4 و 5',
+                title: 'حساب الكثافة والكتلة في الأنظمة الثلاثة (SI, FPS, CGS)',
+                question: '4) Wood mass = 2.7 kg, V = 3 m³ -> calculate density in SI, FPS, CGS. 5) Oil density = 950 kg/m³, V = 4 m³ -> calculate mass in SI, FPS, CGS.',
+                steps: `
+                    <div class="space-y-2.5 text-xs sm:text-sm">
+                        <p><strong>مسألة (4) كثافة الخشب:</strong><br>
+                        • <strong>SI:</strong> <span class="math-ltr">ρ = m / V = 2.7 / 3 = 0.9 kg/m³</span><br>
+                        • <strong>CGS:</strong> <span class="math-ltr">0.9 ÷ 1000 = 0.0009 g/cm³</span><br>
+                        • <strong>FPS:</strong> <span class="math-ltr">0.9 × (2.205 / 3.281³) = 0.0562 lb/ft³</span></p>
+                        <p><strong>مسألة (5) كتلة الزيت:</strong><br>
+                        • <strong>SI:</strong> <span class="math-ltr">m = ρ · V = 950 × 4 = 3800 kg</span><br>
+                        • <strong>CGS:</strong> <span class="math-ltr">3800 × 1000 = 3.8 × 10⁶ g</span><br>
+                        • <strong>FPS:</strong> <span class="math-ltr">3800 × 2.205 = 8379 lb</span></p>
+                    </div>
+                `,
+                finalAnswer: '4) 0.9 kg/m³ | 5) 3800 kg'
+            },
+            {
+                id: 's2-3',
+                sheet: 'sheet2',
+                badge: 'Sheet (2) • مسألة 6 و 7 و 8 و 9',
+                title: 'الوزن النوعي (γ) والكثافة النسبية (SG) وإثبات أنها بلا أبعاد',
+                question: '6) Specific weight of oil (ρ=950, g=9.81). 7) Specific weight of wood (m=9 kg, V=10 m³, g=9.81). 8) SG of oil. 9) SG of wood & proof it is dimensionless.',
+                steps: `
+                    <div class="space-y-2.5 text-xs sm:text-sm">
+                        <p><strong>مسألة (6) الوزن النوعي للزيت:</strong><br>
+                        • <strong>SI:</strong> <span class="math-ltr">γ = ρ · g = 950 × 9.81 = 9319.5 N/m³</span><br>
+                        • <strong>CGS:</strong> <span class="math-ltr">0.95 × 981 = 931.95 dyne/cm³</span><br>
+                        • <strong>FPS:</strong> <span class="math-ltr">59.31 × 32.185 = 1908.9 Poundal/ft³</span></p>
+                        <p><strong>مسألة (7) الوزن النوعي للخشب:</strong> <span class="math-ltr">ρ = 9 / 10 = 0.9 kg/m³</span><br>
+                        • <strong>SI:</strong> <span class="math-ltr">γ = 0.9 × 9.81 = 8.829 N/m³</span> | <strong>CGS:</strong> <span class="math-ltr">0.8829 dyne/cm³</span> | <strong>FPS:</strong> <span class="math-ltr">1.808 Poundal/ft³</span></p>
+                        <p><strong>مسألة (8) الكثافة النسبية للزيت:</strong> <span class="math-ltr">SG = 950 / 1000 = 0.95</span> (بدون وحدة).</p>
+                        <p><strong>مسألة (9) الكثافة النسبية للخشب وإثباتها:</strong> من مسألة 4 (<span class="math-ltr">ρ = 0.9 kg/m³</span>) فإن <span class="math-ltr">SG = 0.9 / 1000 = 0.0009</span>.<br>
+                        • <strong>الإثبات:</strong> <span class="math-ltr">[SG] = [ρ_wood] / [ρ_water] = [ML⁻³] / [ML⁻³] = [M⁰L⁰T⁰] = 1</span> (كمية لا بعدية).</p>
+                    </div>
+                `,
+                finalAnswer: '6) 9319.5 N/m³ | 7) 8.829 N/m³ | 8) 0.95 | 9) 0.0009'
+            },
+
+            // SHEET 3
+            {
+                id: 's3-1',
+                sheet: 'sheet3',
+                badge: 'Sheet (3) • مسألة 1 و 2 و 3',
+                title: 'تكمية الشحنة ومقارنة القوة الكهربية بقوة الجاذبية في ذرة الهيدروجين',
+                question: '1) Number of electrons in 0.04 nC (given e=4×10⁻¹⁹ C). 2) Total charge of 1 million electrons (given e=4×10⁻¹⁹ C). 3) Electric & gravitational forces between proton and electron at r=8×10⁻¹¹ m.',
+                steps: `
+                    <div class="space-y-2.5 text-xs sm:text-sm">
+                        <p><strong>مسألة (1):</strong> <span class="math-ltr">N = Q / e = (0.04 × 10⁻⁹) / (4 × 10⁻¹⁹) = 1 × 10⁸ electrons</span><br>
+                        <span class="text-xs text-amber-500">(ملاحظة: لو استخدمنا القيمة القياسية <span class="math-ltr">e = 1.6×10⁻¹⁹ C</span> يكون الناتج <span class="math-ltr">2.5×10⁸</span> إلكترون).</span></p>
+                        <p><strong>مسألة (2):</strong> <span class="math-ltr">Q = N · e = 10⁶ × (4 × 10⁻¹⁹) = 4 × 10⁻¹³ C</span><br>
+                        <span class="text-xs text-amber-500">(وبالقيمة القياسية للإلكترون تكون <span class="math-ltr">-1.6×10⁻¹³ C</span>).</span></p>
+                        <p><strong>مسألة (3):</strong><br>
+                        • <strong>القوة الكهربية:</strong> <span class="math-ltr">Fe = (9×10⁹ × (1.6×10⁻¹⁹)²) / (8×10⁻¹¹)² = 3.6 × 10⁻⁸ N</span><br>
+                        • <strong>قوة الجاذبية:</strong> <span class="math-ltr">Fg = (6.67×10⁻¹¹ × 9.1×10⁻³¹ × 1.672×10⁻²⁷) / (8×10⁻¹¹)² = 1.586 × 10⁻⁴⁷ N</span></p>
+                    </div>
+                `,
+                finalAnswer: '1) 1×10⁸ | 2) 4×10⁻¹³ C | 3) Fe = 3.6×10⁻⁸ N, Fg = 1.586×10⁻⁴⁷ N'
+            },
+            {
+                id: 's3-2',
+                sheet: 'sheet3',
+                badge: 'Sheet (3) • مسألة 4 و 5',
+                title: 'تلامس الكرتين بسلك + المجال والجهد في منتصف المسافة',
+                question: '4) Two spheres +10 nC & -14 nC, r=0.5 m: (a) F before wire, (b) F after wire. 5) Midpoint P (5 cm) between +2 μC & -2 μC: (a) E at P, (b) F between charges, (c) V at P.',
+                steps: `
+                    <div class="space-y-2.5 text-xs sm:text-sm">
+                        <p><strong>مسألة (4):</strong><br>
+                        • <strong>(a) قبل السلك:</strong> <span class="math-ltr">F = (9×10⁹ × 10×10⁻⁹ × 14×10⁻⁹) / (0.5)² = 5.04 × 10⁻⁶ N</span> (تجاذب).<br>
+                        • <strong>(b) بعد التوصيل بسلك:</strong> <span class="math-ltr">q' = (+10 - 14) / 2 = -2 nC</span> لكل كرة.<br>
+                        <span class="math-ltr">F' = (9×10⁹ × 2×10⁻⁹ × 2×10⁻⁹) / (0.5)² = 1.44 × 10⁻⁷ N</span> (تنافر).</p>
+                        <p><strong>مسألة (5):</strong> المسافة الكلية <span class="math-ltr">5 cm</span> إذن نصف المسافة <span class="math-ltr">r = 2.5 cm = 0.025 m</span>:<br>
+                        • <strong>(a) المجال عند P:</strong> <span class="math-ltr">E_total = 2 × (9×10⁹ × 2×10⁻⁶) / (0.025)² = 5.76 × 10⁷ N/C</span> (ناحية السالبة).<br>
+                        • <strong>(b) القوة بين الشحنتين:</strong> <span class="math-ltr">F = (9×10⁹ × (2×10⁻⁶)²) / (0.05)² = 14.4 N</span> (تجاذب).<br>
+                        • <strong>(c) الجهد عند P:</strong> <span class="math-ltr">V = (+7.2×10⁵) + (-7.2×10⁵) = 0 V</span>.</p>
+                    </div>
+                `,
+                finalAnswer: '4a) 5.04e-6 N | 4b) 1.44e-7 N | 5a) 5.76e7 N/C | 5b) 14.4 N | 5c) 0 V'
+            },
+            {
+                id: 's3-3',
+                sheet: 'sheet3',
+                badge: 'Sheet (3) • مسألة 6 و 7',
+                title: 'المجال والقوة في المنتصف + محصلة المتجهات عند نقطة الأصل',
+                question: '6) Midway between -8 μC & +6 μC (4 cm apart) -> E and F on 3 μC. 7) Origin charge +5 nC with +6 nC at x=0.3 m and -3 nC at y=-0.1 m -> E and F.',
+                steps: `
+                    <div class="space-y-2.5 text-xs sm:text-sm">
+                        <p><strong>مسألة (6):</strong> نصف المسافة <span class="math-ltr">r = 2 cm = 0.02 m</span>:<br>
+                        • المجالان في نفس الاتجاه (نحو <span class="math-ltr">-8 μC</span>):<br>
+                        <span class="math-ltr">E = [9×10⁹ × (8 + 6) × 10⁻⁶] / (0.02)² = 3.15 × 10⁸ N/C</span> (نحو <span class="math-ltr">-8 μC</span>).<br>
+                        • القوة على شحنة <span class="math-ltr">3 μC</span>: <span class="math-ltr">F = q₀·E = 3×10⁻⁶ × 3.15×10⁸ = 945 N</span> (نحو <span class="math-ltr">-8 μC</span>).</p>
+                        <p><strong>مسألة (7):</strong> نحسب مركبتي المجال عند نقطة الأصل:<br>
+                        • من شحنة <span class="math-ltr">+6 nC</span> (يتجه يساراً <span class="math-ltr">-x</span>): <span class="math-ltr">Ex = (9×10⁹ × 6×10⁻⁹) / (0.3)² = 600 N/C</span><br>
+                        • من شحنة <span class="math-ltr">-3 nC</span> (يتجه لأسفل <span class="math-ltr">-y</span>): <span class="math-ltr">Ey = (9×10⁹ × 3×10⁻⁹) / (0.1)² = 2700 N/C</span><br>
+                        • <strong>محصلة المجال:</strong> <span class="math-ltr">E = √(600² + 2700²) = 2765.86 N/C</span><br>
+                        • <strong>الاتجاه:</strong> <span class="math-ltr">θ = tan⁻¹(-2700 / -600) = 77.5°</span> في الربع الثالث (<span class="math-ltr">257.5°</span> من محور <span class="math-ltr">+x</span>).<br>
+                        • <strong>القوة على شحنة الأصل (<span class="math-ltr">+5 nC</span>):</strong> <span class="math-ltr">F = 5×10⁻⁹ × 2765.86 = 1.38 × 10⁻⁵ N</span> في نفس الاتجاه (<span class="math-ltr">257.5°</span>).</p>
+                    </div>
+                `,
+                finalAnswer: '6) E = 3.15e8 N/C, F = 945 N | 7) E = 2765.86 N/C, F = 1.38e-5 N'
+            }
+        ];
+
+        // ==========================================
+        // 3. EXAM TRICKS & PREDICTIONS
+        // ==========================================
+        const EXAM_TRICKS = [
+            {
+                id: 't1',
+                tag: 'توقع أكيد • كولوم',
+                title: 'مطب تلامس الكرتين بسلك معدني!',
+                problem: 'يديك كرتين عليهم شحنتين مختلفتين (زي +10 nC و -14 nC) ويقولك وصلناهم بسلك ثم فصلناهم.',
+                solution: '1) اجمع الشحنتين بإشارتهم: (+10) + (-14) = -4 nC.\n2) اقسم الناتج على 2 بالتساوي: كل كرة تاخد -2 nC.\n3) القوة الجديدة هتتحول من تجاذب إلى تنافر!'
+            },
+            {
+                id: 't2',
+                tag: 'سؤال امتحانات مشهور',
+                title: 'الفرق القاتل بين المجال (E) والجهد (V) في المنتصف!',
+                problem: 'نقطة في منتصف المسافة بين شحنتين قد بعض ومختلفتين في النوع (+q و -q).',
+                solution: '• الجهد (V) = صفر! لأنه كمية قياسية بنعوض فيها بالإشارة (+V - V = 0).\n• المجال (E) ≠ صفر! لأنه متجه؛ المجالين ماشيين في نفس الاتجاه ناحية السالبة فبنجمعهم (2E)!'
+            },
+            {
+                id: 't3',
+                tag: 'مطب في Sheet 3',
+                title: 'انتبه لقيمة شحنة الإلكترون في رأس السؤال!',
+                problem: 'في مسألة 1 و 2 بشيت 3، الدكتور كتب e = 4 × 10⁻¹⁹ C بدل القيمة الحقيقية 1.6 × 10⁻¹⁹ C!',
+                solution: 'في الامتحان اقرأ المعطيات كويس جداً؛ لو الدكتور كتبلك رقم محدد للشحنة في المسألة عوض بيه، ولو مكتبش استخدم 1.6 × 10⁻¹⁹ C.'
+            },
+            {
+                id: 't4',
+                tag: 'لخبطة شائعة',
+                title: 'المكثفات عكس المقاومات في التوالي والتوازي!',
+                problem: 'الطلبة بتتلخبط وتجمع المكثفات في التوالي زي المقاومات!',
+                solution: '• المقاومات: توالي نجمع (R₁+R₂)، توازي مقلوب.\n• المكثفات عكسهم: توازي نجمع (C₁+C₂)، توالي مقلوب (1/C₁ + 1/C₂)!'
+            },
+            {
+                id: 't5',
+                tag: 'تحويلات Sheet 1 & 2',
+                title: 'تحويلات خادعة في الشيتات (μA/mm² و القطر rpm)',
+                problem: 'تحويل 36 μA/mm² إلى A/m²، أو حساب سرعة عجلة مديك قطرها (Diameter) وسرعتها بالـ rpm.',
+                solution: '• في 36 μA/mm²: البسط ×10⁻⁶ والمقام ×10⁻⁶ فيطيروا مع بعض ويفضل الناتج 36 A/m²!\n• لو اداك القطر (Diameter) اقسم على 2 عشان تجيب r، ولو اداك rpm اضرب في 2π/60.'
+            },
+            {
+                id: 't6',
+                tag: 'الفصل 1 • الموائع',
+                title: 'تأثير الحرارة على لزوجة السوائل vs الغازات',
+                problem: 'ماذا يحدث للزوجة عند رفع درجة الحرارة؟',
+                solution: '• في السوائل: اللزوجة بتقل (بتجري أسرع).\n• في الغازات: اللزوجة بتزيد قليلاً (عكس السوائل!).'
+            },
+            {
+                id: 't7',
+                tag: 'وحدات وأبعاد',
+                title: 'كميتين ملهمش وحدة قياس في منهجك!',
+                problem: 'يسألك عن وحدة قياس الكثافة النسبية (SG) أو الانفعال (ε).',
+                solution: 'الاتنين بدون وحدة قياس (Dimensionless) لأنهم نسبة بين كميتين من نفس النوع!'
+            }
+        ];
+
+        // ==========================================
+        // 4. 25-QUESTION INTERACTIVE QUIZ BANK
+        // ==========================================
+        const QUIZ_QUESTIONS = [
+            // CH1 & SHEETS 1-2 (10 Questions)
+            {
+                id: 'q1', cat: 'ch1_sheets', src: 'Sheet 1 • الأبعاد',
+                q: 'ما هي صيغة الأبعاد الصحيحة لثابت الجذب العام (G) في قانون نيوتن <span class="math-ltr">F = G·M·m / r²</span>؟',
+                opts: ['<span class="math-ltr">[ML³T⁻²]</span>', '<span class="math-ltr">[M⁻¹L³T⁻²]</span>', '<span class="math-ltr">[M⁻¹L²T⁻²]</span>', '<span class="math-ltr">[ML⁻³T⁻²]</span>'],
+                ans: 1,
+                exp: 'من القانون <span class="math-ltr">G = F·r² / (M·m)</span>، فتكون الأبعاد <span class="math-ltr">[MLT⁻²][L²] / [M²] = [M⁻¹L³T⁻²]</span>.'
+            },
+            {
+                id: 'q2', cat: 'ch1_sheets', src: 'Sheet 1 • التحويلات',
+                q: 'قيمة كثافة تساوي <span class="math-ltr">6.8 g/cm³</span> تعادل في النظام الدولي (SI):',
+                opts: ['<span class="math-ltr">68 kg/m³</span>', '<span class="math-ltr">680 kg/m³</span>', '<span class="math-ltr">6800 kg/m³</span>', '<span class="math-ltr">0.0068 kg/m³</span>'],
+                ans: 2,
+                exp: 'للتحويل من <span class="math-ltr">g/cm³</span> إلى <span class="math-ltr">kg/m³</span> نضرب في <span class="math-ltr">1000</span>، إذن <span class="math-ltr">6.8 × 1000 = 6800 kg/m³</span>.'
+            },
+            {
+                id: 'q3', cat: 'traps', src: 'Sheet 1 • تريكة تحويلات',
+                q: 'شدة تيار لكل وحدة مساحة تساوي <span class="math-ltr">36 μA/mm²</span> تعادل بالوحدات الدولية (<span class="math-ltr">A/m²</span>):',
+                opts: ['<span class="math-ltr">36 × 10⁻¹² A/m²</span>', '<span class="math-ltr">36 × 10⁶ A/m²</span>', '<span class="math-ltr">36 A/m²</span>', '<span class="math-ltr">0.36 A/m²</span>'],
+                ans: 2,
+                exp: 'البسط <span class="math-ltr">1 μA = 10⁻⁶ A</span> والمقام <span class="math-ltr">1 mm² = 10⁻⁶ m²</span>، فيختصر <span class="math-ltr">10⁻⁶</span> مع <span class="math-ltr">10⁻⁶</span> ويبقى الناتج <span class="math-ltr">36 A/m²</span>!'
+            },
+            {
+                id: 'q4', cat: 'ch1_sheets', src: 'Sheet 1 • تحويل الطاقة والسرعة',
+                q: 'معدل طاقة قدره <span class="math-ltr">500 J/s</span> يعادل بوحدة الكيلوجول لكل ساعة (<span class="math-ltr">kJ/h</span>):',
+                opts: ['<span class="math-ltr">1800 kJ/h</span>', '<span class="math-ltr">500 kJ/h</span>', '<span class="math-ltr">180 kJ/h</span>', '<span class="math-ltr">30 kJ/h</span>'],
+                ans: 0,
+                exp: 'نحول الجول لكيلوجول (<span class="math-ltr">×10⁻³</span>) ونضرب في <span class="math-ltr">3600</span> ثانية: <span class="math-ltr">0.5 × 3600 = 1800 kJ/h</span>.'
+            },
+            {
+                id: 'q5', cat: 'ch1_sheets', src: 'Sheet 2 • مسألة 1',
+                q: 'مقدار العزم الناتج عن قوة <span class="math-ltr">5 N</span> تؤثر على باب على بعد <span class="math-ltr">0.65 m</span> من المفصلة يساوي:',
+                opts: ['<span class="math-ltr">7.69 N·m</span>', '<span class="math-ltr">3.25 N·m</span>', '<span class="math-ltr">5.65 N·m</span>', '<span class="math-ltr">0.13 N·m</span>'],
+                ans: 1,
+                exp: 'العزم <span class="math-ltr">τ = F · r = 5 × 0.65 = 3.25 N·m</span>.'
+            },
+            {
+                id: 'q6', cat: 'ch1_sheets', src: 'Sheet 2 • مسألة 2',
+                q: 'عجلة دراجة قطرها (diameter) <span class="math-ltr">0.43 m</span> تدور بمعدل <span class="math-ltr">3 rps</span>، كم تكون سرعتها الخطية بالنظام الدولي؟',
+                opts: ['<span class="math-ltr">8.10 m/s</span>', '<span class="math-ltr">4.05 m/s</span>', '<span class="math-ltr">1.29 m/s</span>', '<span class="math-ltr">2.02 m/s</span>'],
+                ans: 1,
+                exp: 'نصف القطر <span class="math-ltr">r = 0.43/2 = 0.215 m</span>، والسرعة <span class="math-ltr">v = 2πf·r = 2π(3)(0.215) = 4.05 m/s</span>.'
+            },
+            {
+                id: 'q7', cat: 'ch1_sheets', src: 'Sheet 2 • مسألة 3',
+                q: 'عمود دوران يؤثر بعزم <span class="math-ltr">12 N·m</span> ويدور بسرعة <span class="math-ltr">50 rpm</span>، فإن قدرته تساوي:',
+                opts: ['<span class="math-ltr">600 W</span>', '<span class="math-ltr">62.83 W</span>', '<span class="math-ltr">3769.9 W</span>', '<span class="math-ltr">120 W</span>'],
+                ans: 1,
+                exp: 'نحول السرعة الزاوية <span class="math-ltr">ω = (2π × 50)/60 = 5.236 rad/s</span>، ثم <span class="math-ltr">P = τ·ω = 12 × 5.236 = 62.83 W</span>.'
+            },
+            {
+                id: 'q8', cat: 'ch1_sheets', src: 'Sheet 2 • مسألة 6 و 8',
+                q: 'زيت كثافته <span class="math-ltr">950 kg/m³</span>، كم تساوي كثافته النسبية (<span class="math-ltr">SG</span>) ووزنه النوعي (<span class="math-ltr">γ</span>) علماً بأن <span class="math-ltr">g = 9.81 m/s²</span>؟',
+                opts: ['<span class="math-ltr">0.95</span> و <span class="math-ltr">9319.5 N/m³</span>', '<span class="math-ltr">9.5</span> و <span class="math-ltr">931.95 N/m³</span>', '<span class="math-ltr">0.95</span> و <span class="math-ltr">96.8 N/m³</span>', '<span class="math-ltr">950</span> و <span class="math-ltr">9319.5 N/m³</span>'],
+                ans: 0,
+                exp: 'الكثافة النسبية <span class="math-ltr">SG = 950 / 1000 = 0.95</span> (بلا وحدة)، والوزن النوعي <span class="math-ltr">γ = ρ·g = 950 × 9.81 = 9319.5 N/m³</span>.'
+            },
+            {
+                id: 'q9', cat: 'traps', src: 'الفصل 1 • خواص الموائع',
+                q: 'عند تسخين سائل (مثل العسل) وتسخين غاز (مثل الهواء)، ماذا يحدث للزوجة كل منهما؟',
+                opts: ['تزيد في السائل وتقل في الغاز', 'تقل في السائل وتزيد قليلاً في الغاز', 'تقل في كليهما', 'تزيد في كليهما'],
+                ans: 1,
+                exp: 'لزوجة السوائل تقل بارتفاع درجة الحرارة، بينما لزوجة الغازات تزيد قليلاً بسبب زيادة تصادم الجزيئات.'
+            },
+            {
+                id: 'q10', cat: 'ch1_sheets', src: 'الفصل 1 • الأبعاد',
+                q: 'وحدة قياس القوة في النظام الفرنسي (CGS) هي ........ بينما في النظام الدولي (SI) هي ........',
+                opts: ['النيوتن - الداين', 'الداين - النيوتن', 'الإرج - الجول', 'الباوندال - النيوتن'],
+                ans: 1,
+                exp: 'في النظام الفرنسي (CGS) تقاس القوة بالداين (<span class="math-ltr">dyne</span>)، وفي النظام الدولي بالنيوتن (<span class="math-ltr">N</span>).'
+            },
+
+            // CH4 & SHEET 3 (15 Questions)
+            {
+                id: 'q11', cat: 'ch4_sheet3', src: 'Sheet 3 • مسألة 1 (بمعطيات الشيت)',
+                q: 'في مسألة 1 بشيت 3: إذا كانت الشحنة <span class="math-ltr">0.04 nC</span> ومعطى أن <span class="math-ltr">e = 4 × 10⁻¹⁹ C</span>، فكم يكون عدد الإلكترونات؟',
+                opts: ['<span class="math-ltr">2.5 × 10⁸</span> إلكترون', '<span class="math-ltr">1 × 10⁸</span> إلكترون', '<span class="math-ltr">1.6 × 10⁸</span> إلكترون', '<span class="math-ltr">4 × 10⁹</span> إلكترون'],
+                ans: 1,
+                exp: 'بالتعويض برقم الشيت: <span class="math-ltr">N = (0.04 × 10⁻⁹) / (4 × 10⁻¹⁹) = 1 × 10⁸</span> إلكترون.'
+            },
+            {
+                id: 'q12', cat: 'ch4_sheet3', src: 'الفصل 4 • تكمية الشحنة القياسية',
+                q: 'باستخدام القيمة القياسية لشحنة الإلكترون (<span class="math-ltr">e = 1.6 × 10⁻¹⁹ C</span>)، عدد الإلكترونات في شحنة <span class="math-ltr">0.04 nC</span> يساوي:',
+                opts: ['<span class="math-ltr">2.5 × 10⁸</span> إلكترون', '<span class="math-ltr">1.0 × 10⁸</span> إلكترون', '<span class="math-ltr">6.4 × 10⁸</span> إلكترون', '<span class="math-ltr">2.5 × 10¹⁰</span> إلكترون'],
+                ans: 0,
+                exp: '<span class="math-ltr">N = (4 × 10⁻¹¹) / (1.6 × 10⁻¹⁹) = 2.5 × 10⁸</span> إلكترون.'
+            },
+            {
+                id: 'q13', cat: 'ch4_sheet3', src: 'Sheet 3 • مسألة 3',
+                q: 'في ذرة الهيدروجين (<span class="math-ltr">r = 8 × 10⁻¹¹ m</span>)، النسبة بين القوة الكهربية (<span class="math-ltr">Fe = 3.6×10⁻⁸ N</span>) وقوة الجاذبية (<span class="math-ltr">Fg = 1.586×10⁻⁴⁷ N</span>) توضح أن:',
+                opts: ['قوة الجاذبية أكبر بكثير من الكهربية', 'القوة الكهربية أكبر بمقدار ضخم جداً (<span class="math-ltr">~10³⁹</span> مرة)', 'القوتان متساويتان في المقدار', 'قوة الجاذبية تساوي صفراً'],
+                ans: 1,
+                exp: 'على المستوى الذري القوة الكهربية (<span class="math-ltr">3.6×10⁻⁸ N</span>) أكبر من قوة الجاذبية (<span class="math-ltr">1.586×10⁻⁴⁷ N</span>) بحوالي <span class="math-ltr">2.27 × 10³⁹</span> مرة!'
+            },
+            {
+                id: 'q14', cat: 'ch4_sheet3', src: 'Sheet 3 • مسألة 4 (أ)',
+                q: 'كرتان موصلتان شحنتاهما <span class="math-ltr">+10 nC</span> و <span class="math-ltr">-14 nC</span> والمسافة بينهما <span class="math-ltr">0.5 m</span>. ما مقدار ونوع القوة بينهما؟',
+                opts: ['<span class="math-ltr">5.04 × 10⁻⁶ N</span> (تجاذب)', '<span class="math-ltr">5.04 × 10⁻⁶ N</span> (تنافر)', '<span class="math-ltr">1.44 × 10⁻⁷ N</span> (تجاذب)', '<span class="math-ltr">2.52 × 10⁻⁶ N</span> (تجاذب)'],
+                ans: 0,
+                exp: '<span class="math-ltr">F = (9×10⁹ × 10×10⁻⁹ × 14×10⁻⁹) / (0.5)² = 5.04 × 10⁻⁶ N</span>، وبما أن الشحنتين مختلفتان فالقوة تجاذب.'
+            },
+            {
+                id: 'q15', cat: 'traps', src: 'Sheet 3 • مسألة 4 (ب) - تريكة السلك',
+                q: 'في المسألة السابقة (<span class="math-ltr">+10 nC</span> و <span class="math-ltr">-14 nC</span> على بعد <span class="math-ltr">0.5 m</span>)، بعد توصيل الكرتين بسلك معدني وفصلهما تصبح القوة الجديدة:',
+                opts: ['<span class="math-ltr">1.44 × 10⁻⁷ N</span> (تجاذب)', '<span class="math-ltr">1.44 × 10⁻⁷ N</span> (تنافر)', 'تنعدم القوة وتصبح صفراً', '<span class="math-ltr">5.04 × 10⁻⁶ N</span> (تنافر)'],
+                ans: 1,
+                exp: 'الشحنة الكلية <span class="math-ltr">+10 - 14 = -4 nC</span> تتوزع بالتساوي (<span class="math-ltr">-2 nC</span> لكل كرة) فتصبح القوة تنافر ومقدارها <span class="math-ltr">1.44 × 10⁻⁷ N</span>.'
+            },
+            {
+                id: 'q16', cat: 'ch4_sheet3', src: 'Sheet 3 • مسألة 5 (أ)',
+                q: 'نقطة P في منتصف المسافة (<span class="math-ltr">5 cm</span>) بين شحنتين <span class="math-ltr">+2 μC</span> و <span class="math-ltr">-2 μC</span>. كم تبلغ شدة المجال الكهربي عند P؟',
+                opts: ['صفر', '<span class="math-ltr">2.88 × 10⁷ N/C</span>', '<span class="math-ltr">5.76 × 10⁷ N/C</span> ناحية السالبة', '<span class="math-ltr">5.76 × 10⁷ N/C</span> ناحية الموجبة'],
+                ans: 2,
+                exp: 'نصف المسافة <span class="math-ltr">r = 0.025 m</span>، والمجالان في نفس الاتجاه ناحية السالبة: <span class="math-ltr">E = 2 × (9×10⁹ × 2×10⁻⁶) / (0.025)² = 5.76 × 10⁷ N/C</span>.'
+            },
+            {
+                id: 'q17', cat: 'traps', src: 'Sheet 3 • مسألة 5 (ج)',
+                q: 'في نفس المسألة السابقة (منتصف المسافة بين <span class="math-ltr">+2 μC</span> و <span class="math-ltr">-2 μC</span>)، كم يبلغ الجهد الكهربي (<span class="math-ltr">V</span>) عند النقطة P؟',
+                opts: ['<span class="math-ltr">5.76 × 10⁷ V</span>', '<span class="math-ltr">1.44 × 10⁶ V</span>', 'صفر (<span class="math-ltr">0 V</span>)', '<span class="math-ltr">7.2 × 10⁵ V</span>'],
+                ans: 2,
+                exp: 'الجهد كمية قياسية نجمعها بالإشارات: <span class="math-ltr">V = (+7.2×10⁵) + (-7.2×10⁵) = 0 V</span>.'
+            },
+            {
+                id: 'q18', cat: 'ch4_sheet3', src: 'Sheet 3 • مسألة 6',
+                q: 'شحنتان <span class="math-ltr">-8 μC</span> و <span class="math-ltr">+6 μC</span> المسافة بينهما <span class="math-ltr">4 cm</span>. ما مقدار المجال الكهربي في منتصف المسافة بينهما؟',
+                opts: ['<span class="math-ltr">4.5 × 10⁷ N/C</span>', '<span class="math-ltr">3.15 × 10⁸ N/C</span> نحو <span class="math-ltr">-8 μC</span>', '<span class="math-ltr">3.15 × 10⁸ N/C</span> نحو <span class="math-ltr">+6 μC</span>', '<span class="math-ltr">7.87 × 10⁷ N/C</span>'],
+                ans: 1,
+                exp: 'نصف المسافة <span class="math-ltr">r = 0.02 m</span>، والمجالان في نفس الاتجاه نحو الشحنة السالبة: <span class="math-ltr">E = 9×10⁹ × (8+6)×10⁻⁶ / (0.02)² = 3.15 × 10⁸ N/C</span>.'
+            },
+            {
+                id: 'q19', cat: 'ch4_sheet3', src: 'Sheet 3 • مسألة 6 (الجزء الثاني)',
+                q: 'في المسألة السابقة (حيث المجال في المنتصف <span class="math-ltr">3.15 × 10⁸ N/C</span>)، ما القوة المؤثرة على شحنة <span class="math-ltr">3 μC</span> توضع عند هذه النقطة؟',
+                opts: ['<span class="math-ltr">105 N</span>', '<span class="math-ltr">945 N</span>', '<span class="math-ltr">9.45 N</span>', '<span class="math-ltr">315 N</span>'],
+                ans: 1,
+                exp: '<span class="math-ltr">F = q₀ · E = (3 × 10⁻⁶) × (3.15 × 10⁸) = 945 N</span>.'
+            },
+            {
+                id: 'q20', cat: 'ch4_sheet3', src: 'Sheet 3 • مسألة 7',
+                q: 'في مسألة المتجهات (شحنة <span class="math-ltr">+5 nC</span> عند الأصل، و <span class="math-ltr">+6 nC</span> على محور x بعد <span class="math-ltr">0.3 m</span>، و <span class="math-ltr">-3 nC</span> على محور y السالب بعد <span class="math-ltr">0.1 m</span>)، مقدار محصلة المجال عند الأصل يساوي:',
+                opts: ['<span class="math-ltr">3300 N/C</span>', '<span class="math-ltr">2100 N/C</span>', '<span class="math-ltr">2765.86 N/C</span>', '<span class="math-ltr">600 N/C</span>'],
+                ans: 2,
+                exp: 'المركبتان متعامدتان: <span class="math-ltr">Ex = 600 N/C</span> و <span class="math-ltr">Ey = 2700 N/C</span>، وبفيثاغورس <span class="math-ltr">E = √(600² + 2700²) = 2765.86 N/C</span>.'
+            },
+            {
+                id: 'q21', cat: 'ch4_sheet3', src: 'الفصل 4 • الجهد بين لوحين',
+                q: 'لوحان متوازيان المسافة بينهما <span class="math-ltr">0.3 cm</span> متصلان ببطارية <span class="math-ltr">12 V</span>، شدة المجال الكهربي بين اللوحين تساوي:',
+                opts: ['<span class="math-ltr">40 V/m</span>', '<span class="math-ltr">4000 V/m</span>', '<span class="math-ltr">3.6 V/m</span>', '<span class="math-ltr">400 V/m</span>'],
+                ans: 1,
+                exp: '<span class="math-ltr">E = V / d = 12 / 0.003 = 4000 V/m</span>.'
+            },
+            {
+                id: 'q22', cat: 'traps', src: 'الفصل 4 • المكثفات',
+                q: 'مكثفان سعة كل منهما <span class="math-ltr">2 μF</span>، سعتهما المكافئة عند التوصيل على التوازي ثم التوالي على الترتيب هي:',
+                opts: ['<span class="math-ltr">1 μF</span> و <span class="math-ltr">4 μF</span>', '<span class="math-ltr">4 μF</span> و <span class="math-ltr">1 μF</span>', '<span class="math-ltr">4 μF</span> و <span class="math-ltr">4 μF</span>', '<span class="math-ltr">2 μF</span> و <span class="math-ltr">1 μF</span>'],
+                ans: 1,
+                exp: 'المكثفات عكس المقاومات: في التوازي نجمع (<span class="math-ltr">2+2 = 4 μF</span>) وفي التوالي نأخذ المقلوب (<span class="math-ltr">1 μF</span>).'
+            },
+            {
+                id: 'q23', cat: 'ch4_sheet3', src: 'الفصل 4 • قانون أوم',
+                q: 'مقاومتان قيمة كل منهما <span class="math-ltr">10 Ω</span> موصلتان على التوالي مع مصدر <span class="math-ltr">12 V</span>، التيار المار في الدائرة يساوي:',
+                opts: ['<span class="math-ltr">1.2 A</span>', '<span class="math-ltr">0.6 A</span>', '<span class="math-ltr">2.4 A</span>', '<span class="math-ltr">0.3 A</span>'],
+                ans: 1,
+                exp: '<span class="math-ltr">R_total = 10 + 10 = 20 Ω</span>، إذن <span class="math-ltr">I = V / R = 12 / 20 = 0.6 A</span>.'
+            },
+            {
+                id: 'q24', cat: 'ch4_sheet3', src: 'الفصل 4 • المقاومة النوعية',
+                q: 'إذا زاد طول سلك معدني إلى الضعف وقلت مساحة مقطعه إلى النصف، فإن مقاومته الكهربية:',
+                opts: ['تظل ثابتة', 'تزداد للضعف', 'تزداد 4 أضعاف', 'تقل للربع'],
+                ans: 2,
+                exp: 'من القانون <span class="math-ltr">R = ρ·L/A</span>: <span class="math-ltr">R_new = (2 / 0.5) R = 4R</span>.'
+            },
+            {
+                id: 'q25', cat: 'ch4_sheet3', src: 'الفصل 4 • القدرة الكهربية',
+                q: 'مقاومة <span class="math-ltr">10 Ω</span> يمر بها تيار شدته <span class="math-ltr">0.6 A</span>، فإن القدرة المستهلكة فيها تساوي:',
+                opts: ['<span class="math-ltr">6 W</span>', '<span class="math-ltr">3.6 W</span>', '<span class="math-ltr">60 W</span>', '<span class="math-ltr">0.36 W</span>'],
+                ans: 1,
+                exp: '<span class="math-ltr">P = I² · R = (0.6)² × 10 = 3.6 Watt</span>.'
+            }
+        ];
+
+        const ACHIEVEMENTS = [
+            { id: 'b1', title: 'انطلاقة قوية', desc: 'اجمع أول 20 نقطة XP في المنصة', icon: '🚀', check: (s) => s.xp >= 20 },
+            { id: 'b2', title: 'بطل الفصل الأول', desc: 'ذاكر دروس الفصل الأول الثلاثة', icon: '📐', check: (s) => ['n1', 'n2', 'n3'].every(id => s.doneNotes.includes(id)) },
+            { id: 'b3', title: 'صائد التريكات', desc: 'اهضم 5 تريكات من توقعات الامتحان', icon: '⚡', check: (s) => s.doneTricks.length >= 5 },
+            { id: 'b4', title: 'سلسلة نار!', desc: 'جاوب 5 أسئلة صح ورا بعض بدون غلطة', icon: '🔥', check: (s) => s.bestStreak >= 5 },
+            { id: 'b5', title: 'قاهر الشيتات', desc: 'حل 15 سؤال صح في بنك الأسئلة', icon: '🧲', check: (s) => Object.values(s.answers).filter(a => a.ok).length >= 15 },
+            { id: 'b6', title: 'عبقري BATU 👑', desc: 'وصل لـ 500 نقطة XP واقفل المنهج', icon: '👑', check: (s) => s.xp >= 500 }
+        ];
+
+        // ==========================================
+        // 5. STATE MANAGEMENT (LOCALSTORAGE)
+        // ==========================================
+        const DEFAULT_STATE = {
+            xp: 0,
+            streak: 0,
+            bestStreak: 0,
+            doneNotes: [],
+            doneTricks: [],
+            answers: {},
+            badges: [],
+            theme: 'dark'
+        };
+
+        let state = JSON.parse(localStorage.getItem('physics_hub_pro_v2')) || DEFAULT_STATE;
+        let noteFilter = 'all';
+        let sheetFilter = 'all';
+        let quizFilter = 'all';
+
+        function saveState() {
+            localStorage.setItem('physics_hub_pro_v2', JSON.stringify(state));
+            updateHUD();
+            checkBadges();
+        }
+
+        function addXP(pts, msg) {
+            state.xp += pts;
+            showToast(`+${pts} XP`, msg, 'xp');
+            saveState();
+        }
+
+        function showToast(title, sub, type = 'info') {
+            const box = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            const styles = {
+                xp: 'from-amber-500 to-orange-600 text-slate-950',
+                badge: 'from-emerald-500 to-teal-600 text-white',
+                info: 'from-blue-600 to-indigo-600 text-white'
+            };
+            const ico = type === 'badge' ? '🏆' : (type === 'xp' ? '✨' : '💡');
+            el.className = `pointer-events-auto flex items-center gap-3 p-3.5 rounded-2xl bg-gradient-to-l ${styles[type]} shadow-xl transition-all duration-300 translate-y-4 opacity-0`;
+            el.innerHTML = `<span class="text-2xl">${ico}</span><div><div class="font-black text-sm">${title}</div><div class="text-xs opacity-90 font-semibold">${sub}</div></div>`;
+            box.appendChild(el);
+            requestAnimationFrame(() => el.classList.remove('translate-y-4', 'opacity-0'));
+            setTimeout(() => {
+                el.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => el.remove(), 300);
+            }, 3000);
+        }
+
+        function getRank(xp) {
+            if (xp < 120) return { title: 'مبتدئ فيزياء', icon: '🌱', min: 0, max: 120 };
+            if (xp < 300) return { title: 'طالب مجتهد', icon: '⚡', min: 120, max: 300 };
+            if (xp < 500) return { title: 'وحش الفيزياء', icon: '🔥', min: 300, max: 500 };
+            return { title: 'عبقري BATU 👑', icon: '👑', min: 500, max: 800 };
+        }
+
+        function updateHUD() {
+            const r = getRank(state.xp);
+            document.getElementById('rank-icon').textContent = r.icon;
+            document.getElementById('rank-title').textContent = r.title;
+            document.getElementById('xp-count').textContent = state.xp;
+            document.getElementById('streak-count').textContent = state.streak;
+
+            const pct = Math.min(100, Math.round(((state.xp - r.min) / (r.max - r.min)) * 100));
+            document.getElementById('xp-bar').style.width = `${pct}%`;
+
+            document.getElementById('badges-badge').textContent = `${state.badges.length}/${ACHIEVEMENTS.length}`;
+            document.getElementById('tricks-counter').textContent = `${state.doneTricks.length}/${EXAM_TRICKS.length}`;
+            const bigT = document.getElementById('tricks-big-counter');
+            if (bigT) bigT.textContent = `${state.doneTricks.length} / ${EXAM_TRICKS.length}`;
+
+            const rightAns = Object.values(state.answers).filter(a => a.ok).length;
+            document.getElementById('quiz-counter').textContent = `${rightAns}/${QUIZ_QUESTIONS.length}`;
+            document.getElementById('notes-progress-text').textContent = `تمت مذاكرة ${state.doneNotes.length} من ${STUDY_NOTES.length} دروس`;
+        }
+
+        function checkBadges() {
+            let unlockedAny = false;
+            ACHIEVEMENTS.forEach(b => {
+                if (!state.badges.includes(b.id) && b.check(state)) {
+                    state.badges.push(b.id);
+                    unlockedAny = true;
+                    showToast(`وسام جديد: ${b.title}`, b.desc, 'badge');
+                }
+            });
+            if (unlockedAny) {
+                localStorage.setItem('physics_hub_pro_v2', JSON.stringify(state));
+                updateHUD();
+            }
+        }
+
+        // ==========================================
+        // 6. RENDER FUNCTIONS
+        // ==========================================
+        function renderNotes() {
+            const container = document.getElementById('notes-container');
+            const list = STUDY_NOTES.filter(n => noteFilter === 'all' || n.chapter === noteFilter);
+            container.innerHTML = list.map(n => {
+                const done = state.doneNotes.includes(n.id);
+                const fHtml = n.formulas.map(f => `
+                    <div class="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/70 dark:border-slate-700/70 text-xs">
+                        <span class="font-bold text-slate-700 dark:text-slate-200">${f.name}</span>
+                        <div class="flex items-center gap-2">
+                            <span class="formula-block font-bold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2.5 py-1 rounded-lg">${f.expr}</span>
+                            <span class="math-ltr text-[11px] text-slate-500 dark:text-slate-400 font-semibold">[${f.unit}]</span>
+                        </div>
+                    </div>
+                `).join('');
+
+                return `
+                    <article class="rounded-3xl bg-white dark:bg-slate-900 border ${done ? 'border-emerald-500/50' : 'border-slate-200 dark:border-slate-800'} p-6 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="px-3 py-1 rounded-full text-xs font-extrabold ${n.chapter === 'ch1' ? 'bg-blue-500/10 text-blue-600 dark:text-blue-400' : 'bg-purple-500/10 text-purple-600 dark:text-purple-400'}">${n.badge}</span>
+                                <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-blue-500"><i class="fa-solid ${n.icon}"></i></div>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-black mb-2">${n.title}</h3>
+                            <p class="text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-4">${n.summary}</p>
+                            <div class="space-y-2 mb-4">${fHtml}</div>
+                            <div class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 text-xs sm:text-sm leading-relaxed mb-5 text-slate-700 dark:text-slate-200">
+                                ${n.example}
+                            </div>
+                        </div>
+                        <button onclick="completeNote('${n.id}')" class="w-full py-3 rounded-2xl font-black text-sm transition flex items-center justify-center gap-2 ${done ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' : 'bg-slate-900 dark:bg-blue-600 hover:opacity-90 text-white shadow'}">
+                            <i class="fa-solid ${done ? 'fa-circle-check' : 'fa-check'}"></i>
+                            <span>${done ? 'تمت مذاكرة الدرس ✓' : 'ذاكرت الدرس ده! (+15 XP)'}</span>
+                        </button>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function renderSheets() {
+            const container = document.getElementById('sheets-container');
+            const list = SOLVED_SHEETS.filter(s => sheetFilter === 'all' || s.sheet === sheetFilter);
+            container.innerHTML = list.map(s => `
+                <div class="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+                    <button onclick="toggleSheetItem('${s.id}')" class="w-full text-right p-5 flex items-center justify-between gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition">
+                        <div class="space-y-1.5">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="px-3 py-1 rounded-full bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 text-xs font-black">${s.badge}</span>
+                                <span class="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-lg">الناتج: <span class="math-ltr">${s.finalAnswer}</span></span>
+                            </div>
+                            <h3 class="text-base sm:text-lg font-black text-slate-900 dark:text-white">${s.title}</h3>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 font-mono" dir="ltr">${s.question}</p>
+                        </div>
+                        <div class="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 text-slate-500">
+                            <i id="ico-${s.id}" class="fa-solid fa-chevron-down transition-transform duration-200 rotate-180"></i>
+                        </div>
+                    </button>
+                    <div id="body-${s.id}" class="p-5 pt-0 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/30">
+                        <div class="pt-4 leading-relaxed text-slate-700 dark:text-slate-200">
+                            ${s.steps}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderTricks() {
+            const container = document.getElementById('tricks-container');
+            container.innerHTML = EXAM_TRICKS.map((t, i) => {
+                const done = state.doneTricks.includes(t.id);
+                return `
+                    <div class="rounded-3xl bg-white dark:bg-slate-900 border ${done ? 'border-amber-500/60' : 'border-slate-200 dark:border-slate-800'} p-6 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <span class="inline-block px-3 py-1 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 text-xs font-black mb-3">تريكة #${i + 1} • ${t.tag}</span>
+                            <h3 class="text-lg font-black mb-2">${t.title}</h3>
+                            <div class="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs sm:text-sm text-rose-700 dark:text-rose-300 font-semibold mb-3">
+                                <strong>⚠️ المطب:</strong> ${t.problem}
+                            </div>
+                            <div class="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-xs sm:text-sm text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-line mb-5">
+                                <strong class="text-emerald-600 dark:text-emerald-400">✅ الحل المضمون:</strong><br>${t.solution}
+                            </div>
+                        </div>
+                        <button onclick="masterTrick('${t.id}')" class="w-full py-3 rounded-2xl font-black text-sm transition flex items-center justify-center gap-2 ${done ? 'bg-amber-500/20 text-amber-600 dark:text-amber-400 border border-amber-500/30' : 'bg-gradient-to-l from-amber-500 to-orange-500 hover:opacity-95 text-slate-950 shadow'}">
+                            <i class="fa-solid ${done ? 'fa-star' : 'fa-bolt'}"></i>
+                            <span>${done ? 'مهضومة ومضمونة ★' : 'فهمتها! (+15 XP)'}</span>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            const list = QUIZ_QUESTIONS.filter(q => quizFilter === 'all' || q.cat === quizFilter);
+            container.innerHTML = list.map((q, idx) => {
+                const userAns = state.answers[q.id];
+                const answered = userAns !== undefined;
+
+                const optsHtml = q.opts.map((opt, oIdx) => {
+                    let cls = 'bg-slate-50 dark:bg-slate-800/70 border-slate-200 dark:border-slate-700 hover:border-blue-500 text-slate-800 dark:text-slate-200';
+                    let badge = `<span class="w-7 h-7 rounded-lg bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-black shrink-0">${['أ', 'ب', 'ج', 'د'][oIdx]}</span>`;
+
+                    if (answered) {
+                        if (oIdx === q.ans) {
+                            cls = 'bg-emerald-500/15 border-emerald-500 text-emerald-700 dark:text-emerald-300 font-bold';
+                            badge = `<span class="w-7 h-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-check"></i></span>`;
+                        } else if (oIdx === userAns.sel && !userAns.ok) {
+                            cls = 'bg-rose-500/15 border-rose-500 text-rose-700 dark:text-rose-300';
+                            badge = `<span class="w-7 h-7 rounded-lg bg-rose-500 text-white flex items-center justify-center text-xs shrink-0"><i class="fa-solid fa-xmark"></i></span>`;
+                        } else {
+                            cls = 'opacity-60 bg-slate-50 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800';
+                        }
+                    }
+
+                    return `
+                        <button onclick="answerQuiz('${q.id}', ${oIdx})" class="w-full text-right p-3.5 rounded-2xl border-2 transition flex items-center gap-3 text-sm ${cls}">
+                            ${badge}
+                            <span class="leading-relaxed">${opt}</span>
+                        </button>
+                    `;
+                }).join('');
+
+                return `
+                    <div class="rounded-3xl bg-white dark:bg-slate-900 border ${answered ? (userAns.ok ? 'border-emerald-500/40' : 'border-rose-500/40') : 'border-slate-200 dark:border-slate-800'} p-6 shadow-sm">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+                            <span class="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-xs font-bold">سؤال ${idx + 1} • ${q.src}</span>
+                            ${answered ? (userAns.ok ? '<span class="text-xs font-black text-emerald-500">✓ إجابة صحيحة!</span>' : '<span class="text-xs font-black text-rose-500">✗ راجع الشرح تحت</span>') : '<span class="text-xs font-bold text-amber-500">+20 XP</span>'}
+                        </div>
+                        <h3 class="text-base sm:text-lg font-extrabold mb-4 leading-relaxed">${q.q}</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">${optsHtml}</div>
+                        ${answered ? `
+                            <div class="mt-4 p-4 rounded-2xl bg-blue-500/10 border border-blue-500/25 text-xs sm:text-sm leading-relaxed text-slate-700 dark:text-slate-200">
+                                <strong class="text-blue-600 dark:text-blue-400 block mb-1">💡 خطوات الحل:</strong>
+                                ${q.exp}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderAchievementsModal() {
+            const list = document.getElementById('achievements-list');
+            list.innerHTML = ACHIEVEMENTS.map(b => {
+                const ok = state.badges.includes(b.id);
+                return `
+                    <div class="p-4 rounded-2xl border ${ok ? 'bg-amber-500/10 border-amber-500/40' : 'bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800 opacity-60'} flex items-center gap-3">
+                        <div class="text-3xl ${ok ? 'badge-unlocked' : 'grayscale'}">${b.icon}</div>
+                        <div>
+                            <div class="font-black text-sm ${ok ? 'text-amber-600 dark:text-amber-400' : 'text-slate-500'}">${b.title}</div>
+                            <div class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">${b.desc}</div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ==========================================
+        // 7. INTERACTIONS & CALCULATORS
+        // ==========================================
+        function switchTab(tab) {
+            ['notes', 'sheets', 'tricks', 'quiz'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                const btn = document.getElementById(`tab-btn-${t}`);
+                btn.classList.remove('bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-600/25');
+                btn.classList.add('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300');
+            });
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            const active = document.getElementById(`tab-btn-${tab}`);
+            active.classList.remove('bg-slate-100', 'dark:bg-slate-800', 'text-slate-600', 'dark:text-slate-300');
+            active.classList.add('bg-blue-600', 'text-white', 'shadow-md', 'shadow-blue-600/25');
+        }
+
+        function filterNotes(f) {
+            noteFilter = f;
+            document.querySelectorAll('.note-filter-btn').forEach(b => {
+                b.className = b.dataset.filter === f
+                    ? 'note-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-blue-600 text-white'
+                    : 'note-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
+            });
+            renderNotes();
+        }
+
+        function filterSheets(f) {
+            sheetFilter = f;
+            document.querySelectorAll('.sheet-filter-btn').forEach(b => {
+                b.className = b.dataset.sfilter === f
+                    ? 'sheet-filter-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-black bg-indigo-600 text-white'
+                    : 'sheet-filter-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
+            });
+            renderSheets();
+        }
+
+        function toggleSheetItem(id) {
+            const body = document.getElementById(`body-${id}`);
+            const ico = document.getElementById(`ico-${id}`);
+            body.classList.toggle('hidden');
+            ico.classList.toggle('rotate-180');
+        }
+
+        function toggleAllSheetSolutions(open) {
+            SOLVED_SHEETS.forEach(s => {
+                const body = document.getElementById(`body-${s.id}`);
+                const ico = document.getElementById(`ico-${s.id}`);
+                if (!body) return;
+                if (open) {
+                    body.classList.remove('hidden');
+                    ico.classList.add('rotate-180');
+                } else {
+                    body.classList.add('hidden');
+                    ico.classList.remove('rotate-180');
+                }
+            });
+        }
+
+        function filterQuiz(f) {
+            quizFilter = f;
+            document.querySelectorAll('.quiz-filter-btn').forEach(b => {
+                b.className = b.dataset.qfilter === f
+                    ? 'quiz-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-emerald-600 text-white'
+                    : 'quiz-filter-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300';
+            });
+            renderQuiz();
+        }
+
+        function completeNote(id) {
+            if (!state.doneNotes.includes(id)) {
+                state.doneNotes.push(id);
+                addXP(15, 'إتمام مذاكرة درس جديد!');
+                renderNotes();
+            }
+        }
+
+        function masterTrick(id) {
+            if (!state.doneTricks.includes(id)) {
+                state.doneTricks.push(id);
+                addXP(15, 'هضمت تريكة امتحان!');
+                renderTricks();
+            }
+        }
+
+        function answerQuiz(qId, sel) {
+            const q = QUIZ_QUESTIONS.find(x => x.id === qId);
+            const ok = sel === q.ans;
+            const prev = state.answers[qId];
+
+            if (ok) {
+                if (!prev || !prev.awarded) {
+                    state.streak += 1;
+                    if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+                    state.answers[qId] = { sel, ok: true, awarded: true };
+                    addXP(20, 'إجابة صحيحة في بنك الأسئلة!');
+                } else {
+                    state.answers[qId].sel = sel;
+                    state.answers[qId].ok = true;
+                    saveState();
+                }
+            } else {
+                state.streak = 0;
+                state.answers[qId] = { sel, ok: false, awarded: prev ? prev.awarded : false };
+                saveState();
+            }
+            renderQuiz();
+        }
+
+        function resetQuizProgress() {
+            state.answers = {};
+            state.streak = 0;
+            saveState();
+            renderQuiz();
+            showToast('تمت إعادة الأسئلة', 'تقدر تحل الـ 25 سؤال من تاني دلوقتي!', 'info');
+        }
+
+        function toggleAchievementsModal() {
+            const m = document.getElementById('achievements-modal');
+            if (m.classList.contains('hidden')) {
+                renderAchievementsModal();
+                m.classList.remove('hidden');
+                m.classList.add('flex');
+            } else {
+                m.classList.add('hidden');
+                m.classList.remove('flex');
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const ico = document.getElementById('theme-icon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                state.theme = 'light';
+                ico.className = 'fa-solid fa-moon text-lg';
+            } else {
+                html.classList.add('dark');
+                state.theme = 'dark';
+                ico.className = 'fa-solid fa-sun text-lg';
+            }
+            saveState();
+        }
+
+        // Live Calculators
+        function runCoulombCalc() {
+            const q1 = parseFloat(document.getElementById('c-q1').value) || 0;
+            const q2 = parseFloat(document.getElementById('c-q2').value) || 0;
+            const r = parseFloat(document.getElementById('c-r').value) || 1;
+            const out = document.getElementById('c-coulomb-out');
+            if (r <= 0) { out.textContent = 'المسافة لازم تكون أكبر من صفر!'; return; }
+            const k = 9e9;
+            const f1 = (k * Math.abs(q1 * 1e-9) * Math.abs(q2 * 1e-9)) / (r * r);
+            const t1 = (q1 * q2) < 0 ? 'تجاذب' : ((q1 * q2) > 0 ? 'تنافر' : 'صفر');
+            const qEq = (q1 + q2) / 2;
+            const f2 = (k * Math.abs(qEq * 1e-9) * Math.abs(qEq * 1e-9)) / (r * r);
+            const t2 = qEq === 0 ? 'تنعدم' : 'تنافر';
+            out.innerHTML = `قبل: <span class="math-ltr">${f1.toExponential(2)} N</span> (${t1})<br>بعد السلك (<span class="math-ltr">${qEq} nC</span>): <span class="math-ltr">${f2.toExponential(2)} N</span> (${t2})`;
+        }
+
+        function runUnitCalc() {
+            const val = parseFloat(document.getElementById('u-val').value) || 0;
+            const type = document.getElementById('u-type').value;
+            const out = document.getElementById('u-out');
+            let res = '';
+            if (type === 'kmh_ms') res = `${(val * 1000 / 3600).toFixed(2)} m/s`;
+            if (type === 'ms_kmh') res = `${(val * 3.6).toFixed(2)} km/h`;
+            if (type === 'gcm3_kgm3') res = `${(val * 1000).toFixed(1)} kg/m³`;
+            if (type === 'rpm_rads') res = `${((val * 2 * Math.PI) / 60).toFixed(3)} rad/s`;
+            out.innerHTML = `الناتج: <span class="math-ltr">${res}</span>`;
+        }
+
+        function runRCCalc() {
+            const v1 = parseFloat(document.getElementById('rc-v1').value) || 0;
+            const v2 = parseFloat(document.getElementById('rc-v2').value) || 0;
+            const type = document.getElementById('rc-type').value;
+            const out = document.getElementById('rc-out');
+            if (v1 <= 0 || v2 <= 0) { out.textContent = 'دخل قيم موجبة'; return; }
+            const sum = v1 + v2;
+            const par = (v1 * v2) / (v1 + v2);
+            out.innerHTML = type === 'cap'
+                ? `توازي: <span class="math-ltr">${sum.toFixed(2)}</span> | توالي: <span class="math-ltr">${par.toFixed(2)}</span>`
+                : `توالي: <span class="math-ltr">${sum.toFixed(2)}</span> | توازي: <span class="math-ltr">${par.toFixed(2)}</span>`;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (state.theme === 'light') {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('theme-icon').className = 'fa-solid fa-moon text-lg';
+            }
+            updateHUD();
+            renderNotes();
+            renderSheets();
+            renderTricks();
+            renderQuiz();
+        });
+    </script>
+</body>
+</html>
